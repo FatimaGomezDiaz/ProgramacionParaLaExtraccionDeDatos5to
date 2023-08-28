@@ -1,0 +1,116 @@
+#Gómez Díaz Fatima
+#Grupo 951
+#Domingo 27 de Agosto 2023
+
+import pandas as pd
+#1.	Escribir un programa que genere y muestre por pantalla un DataFrame con los datos de
+#la tabla siguiente:
+#Mes	Ventas	Gastos
+#Enero	30500	22000
+#Febrero	35600	23400
+#Marzo	28300	18100
+#Abril	33900	20700
+
+data = {
+    'Mes': ['Enero', 'Febrero', 'Marzo', 'Abril'],
+    'Ventas': [30500, 35600, 28300, 33900],
+    'Gastos': [22000, 23400, 18100, 20700]
+}
+
+df_mes = pd.DataFrame(data)
+
+print("\nEjercicio 1\n",df_mes)
+
+
+#2.	Escribir una función que reciba un DataFrame con el formato del ejercicio anterior,
+# una lista de meses, y devuelva el balance (ventas - gastos) total en los meses indicados.
+
+def calcular_balance(df, meses):
+    balance_total = 0
+
+    for mes in meses:
+        concepto = df[df['Mes'] == mes]
+        if not concepto.empty:
+            ventas = concepto['Ventas'].values[0]
+            gastos = concepto['Gastos'].values[0]
+            balance_total += ventas - gastos
+
+    return balance_total
+
+data = {
+    'Mes': ['Enero', 'Febrero', 'Marzo', 'Abril'],
+    'Ventas': [30500, 35600, 28300, 33900],
+    'Gastos': [22000, 23400, 18100, 20700]
+}
+df = pd.DataFrame(data)
+
+meses_balance = ['Enero', 'Febrero', 'Marzo','Abril']
+
+balance = calcular_balance(df, meses_balance)
+print(f"\nEjercicio 2\nResultado balance total: \nEl balance es: {balance}")
+
+
+#3.El archivo cotizacion.csv contiene las cotizaciones de las empresas del IBEX35
+# con las siguientes columnas: nombre (nombre de la empresa), Final (precio de la
+# acción al cierre de bolsa), Máximo (precio máximo de la acción durante la jornada),
+# Mínimo (precio mínimo de la acción durante la jornada), volumen (Volumen al cierre de bolsa),
+# Efectivo (capitalización al cierre en miles de euros). Construir una función que construya un
+# DataFrame a partir del archivo con el formato anterior y devuelve otro DataFrame con el mínimo, el máximo y la media de cada columna.
+
+def cotizaciones(archivo):
+    df = pd.read_csv(archivo)
+
+    resumen = {
+        'Mínimo': df.min(),
+        'Máximo': df.max(),
+        'Media': df.mean()
+    }
+
+    resumen_df = pd.DataFrame(resumen)
+
+    return resumen_df
+
+
+cotizacion_arc = 'cotizacion.csv'
+resultado = cotizaciones(cotizacion_arc)
+
+print("Cotizaciones")
+print("-----------------------")
+print("Mínimo:")
+print(resultado['Mínimo'])
+print("-----------------------")
+print("Máximo:")
+print(resultado['Máximo'])
+print("-----------------------")
+print("Media:")
+print(resultado['Media'])
+print("-----------------------")
+
+#4.	El archivo titanic.csv contiene información sobre los pasajeros del Titanic.
+# Escribir un programa con los siguientes requisitos:
+#a.	Generar un DataFrame con los datos del archivo.
+#b.	Mostrar por pantalla las dimensiones del DataFrame.
+#c.	Mostrar el número de datos que contiene, los nombres de sus columnas.
+#d.	Mostrar las 10 primeras filas y las 10 últimas filas.
+#e.	Mostrar por pantalla el porcentaje de personas que sobrevivieron y murieron.
+#f.	Mostrar por pantalla el porcentaje de personas que sobrevivieron en cada clase.
+
+
+
+titanic_df = pd.read_csv('titanic.csv')
+
+print("Dimensiones:", titanic_df.shape)
+
+print("Columnas:", ', '.join(titanic_df.columns))
+
+print("\nPrimeras 10 filas:",titanic_df.head(10))
+
+print("\nÚltimas 10 filas:",titanic_df.tail(10))
+
+sobrevivieron = (titanic_df['Survived'].mean()) * 100
+fallecieron = 100 - sobrevivieron
+print(f"\nSobrevivieron: {sobrevivieron:.2f}%")
+print(f"Fallecieron: {fallecieron:.2f}%")
+
+sobrevivieron_clase = titanic_df.groupby('Pclass')['Survived'].mean() * 100
+print("\nSobrevivieron por clase:",sobrevivieron_clase)
