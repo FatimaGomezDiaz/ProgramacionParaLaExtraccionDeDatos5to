@@ -1,0 +1,41 @@
+#Investigar sobre el proceso de automatización usando la libreria Selenium
+-Instalación de Selenium: Instala Selenium y su controlador para el navegador.
+-Crear instancia del navegador: Inicializa el navegador que deseas automatizar.
+-Navegar a URL: Abre el sitio web que quieres automatizar.
+-Interactuar con elementos: Encuentra elementos y realiza acciones como hacer clic o enviar texto.
+-Esperas: Utiliza esperas para manejar la carga de la página.
+-Captura de pantalla: Toma capturas de pantalla según sea necesario.
+-Finalización: Cierra el navegador cuando hayas terminado.
+-Manejo de excepciones: Implementa manejo de excepciones para lidiar con problemas imprevistos.
+-Este proceso permite automatizar tareas en sitios web de manera eficiente y es útil en diversas aplicaciones, como pruebas automatizadas, extracción de datos y automatización de flujos de trabajo.
+
+
+import time
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+
+
+a = Service(ChromeDriverManager().install())
+opc = Options()
+opc.add_argument("--window-size=700,620")
+
+
+navegador = webdriver.Chrome(service=a, options=opc)
+navegador.get("https://www.amazon.com.mx/")
+
+product = input("Nintendo switch oled")
+
+search = navegador.find_element(By.NAME, "field-keywords")
+search.send_keys(product)
+
+# enter
+search.send_keys(Keys.RETURN)
+
+time.sleep(25)
+navegador.save_screenshot("captura_producto.png")
+
+navegador.quit()
