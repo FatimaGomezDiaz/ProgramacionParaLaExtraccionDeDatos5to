@@ -1,1 +1,63 @@
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import pandas as pd
+import time
+
+s = Service(ChromeDriverManager().install())
+o = Options()
+o.add_argument("--window-size=800,600")
+n = webdriver.Chrome(service=s, options=o)
+n.get("https://www.amazon.com.mx/")
+
+product = input("¿Qué producto comprarás?:")
+amount_products = int(input("Cantidad: "))
+
+data = {"Nombre del producto": [],
+        "Rating": [],
+        "Precio": [],
+        "Fecha de entrega": []}
+
+search_element = n.find_element(By.NAME, "field-keywords")
+search_element.send_keys(product)
+search_button = n.find_element(By.XPATH, "//input[@value='Ir']")
+search_button.click()
+
+time.sleep(20)
+
+page_content = BeautifulSoup(n.page_source, "html.parser")
+product_results = page_content.find_all("div", {"data-component-type": "s-search-result"})
+
+for product_result in product_results[:amount_products]:
+    name = product_result.find("h2", attrs={"class": "a-size-mini a-spacing-none a-color-base s-line-clamp-4"})
+    rating = product_result.find("span", attrs={"class": "a-icon-alt"})
+    price = product_result.find("span", attrs={"class": "a-offscreen"})
+    deliver_date = product_result.find("div", attrs={"class": "a-row s-align-children-center"})
+
+    nombre_producto_texto = name.text if name else "No disponible"
+    rating_texto = rating.text if rating else "No disponible"
+    precio_texto = price.text if price else "No disponible"
+    fecha_entrega_texto = deliver_date.text if deliver_date else "No disponible"
+    data["Nombre del producto"].append(nombre_producto_texto)
+    data["Rating"].append(rating_texto)
+    data["Precio"].append(precio_texto)
+    data["Fecha de entrega"].append(fecha_entrega_texto)
+
+df_productos = pd.DataFrame(data)
+
+nombre_archivo = 'product_amazon_data.csv'
+df_productos.to_csv(nombre_archivo, index=False)
+
+mensaje_confirmacion = f"Se han guardado los datos de {amount_products} productos en '{nombre_archivo}'"
+print(mensaje_confirmacion)
+n.quit()
+
+import pandas as pd
+df = pd.read_csv('product_amazon_data.csv')
+print(df)
+
 
